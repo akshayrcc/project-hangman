@@ -22,18 +22,12 @@ class TestHangman {
 	}
 
 	@Test
-	void test_lengthOfFetchedWord() {
-		Hangman hangman = new Hangman();
-		String word = hangman.fetchWord();
-		assertTrue(word.length() == 5);
-	}
-
-	@Test
 	void test_lengthOfFetchedWordRandom() {
 		Random ran = new Random();
 		int requestedLength = ran.nextInt(6) + 5;
-		System.out.println("requestedLength" + requestedLength);
+		System.out.println(" Random requestedLength is" + requestedLength);
 		Hangman hangman = new Hangman();
+		hangman.loadWords();
 		String word = hangman.fetchWord(requestedLength);
 		assertTrue(word.length() == requestedLength);
 	}
@@ -46,6 +40,7 @@ class TestHangman {
 		int round = 0;
 		String word = null;
 		Hangman hangman = new Hangman();
+		hangman.loadWords();
 		while (round < 100) {
 			requestedLength = random.nextInt(6) + 5;
 			word = hangman.fetchWord(requestedLength);

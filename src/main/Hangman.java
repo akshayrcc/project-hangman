@@ -51,4 +51,24 @@ public class Hangman {
 		}
 	}
 
+	public String fetchClue(String word) {
+		StringBuilder clue = new StringBuilder();
+		for (int i = 0; i < word.length(); i++) {
+			clue.append('-');
+		}
+		return clue.toString();
+	}
+
+	public String fetchClue(String word, String clue, char guess) {
+		StringBuilder newclue = new StringBuilder();
+		for (int i = 0; i < word.length(); i++) {
+			if (guess == word.charAt(i) && guess != clue.charAt(i)) {
+				newclue.append(guess);
+			} else {
+				newclue.append(clue.charAt(i));
+			}
+		}
+		return newclue.toString();
+	}
+
 }

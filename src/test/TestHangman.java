@@ -48,4 +48,27 @@ class TestHangman {
 			assertTrue(usedWordSet.add(word));
 		}
 	}
+
+	@Test
+	void fetchClueBeforeAnyGuess() {
+		Hangman hangman = new Hangman();
+		String clue = hangman.fetchClue("Pizza");
+		assertEquals("-----", clue);
+	}
+
+	@Test
+	void fetchClueAfterACorrectGuess() {
+		Hangman hangman = new Hangman();
+		String clue = hangman.fetchClue("Pizza");
+		String newclue = hangman.fetchClue("Pizza", clue, 'a');
+		assertEquals("----a", newclue);
+	}
+
+	@Test
+	void fetchClueAfterAnIncorrectGuess() {
+		Hangman hangman = new Hangman();
+		String clue = hangman.fetchClue("Pizza");
+		String newclue = hangman.fetchClue("Pizza", clue, 'x');
+		assertEquals("-----", newclue);
+	}
 }

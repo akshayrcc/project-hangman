@@ -15,6 +15,16 @@ public class Hangman {
 	ArrayList<String> wordsList = new ArrayList<>();
 	public int remainingTrails;
 	public int score = 0;
+	public ScoreDB scoreDB = new ScoreDB();
+
+	MockScoreDB msd;
+
+	public Hangman() {
+	}
+
+	public Hangman(MockScoreDB msd) {
+		this.msd = msd;
+	}
 
 	public int countAlphabet(String word, char alphabet) {
 		int result = 0;
@@ -82,6 +92,16 @@ public class Hangman {
 			}
 		}
 		return newclue.toString();
+	}
+
+	public boolean saveScore(WordScore wordscore) {
+		return scoreDB.writeScoreDB(wordscore);
+	}
+
+	public boolean saveWordScore(String word, double score) {
+		return msd.writeScoreDB(word, score);
+
+		// return false;
 	}
 
 }

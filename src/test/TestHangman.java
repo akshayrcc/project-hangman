@@ -3,6 +3,8 @@ package test;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -15,6 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import main.Hangman;
+import main.MockScoreDB;
+import main.WordScore;
 
 class TestHangman {
 	static Random random;
@@ -123,6 +127,26 @@ class TestHangman {
 		char guess = 'x';
 		hangman.fetchClue(word, clue, guess);
 		assertEquals(0, hangman.score);
+	}
+
+	@Test
+	void test_saveScore() {
+		assertTrue(hangman.saveScore(new WordScore("apple", 1)));
+	}
+
+	@Test
+	void test_writeScoreDB() {
+		WordScore ws = new WordScore("apple", 8);
+		hangman.saveScore(ws);
+		assertTrue(hangman.scoreDB.readScore("apple") == 8);
+	}
+
+	@Test
+	void test_saveScoreUsingMockDB() {
+		MockScoreDB msd = mock(MockScoreDB.class);
+		Hangman hangman = new Hangman(msd);
+		when(msd.writeScoreDB("apple", 10)).thenReturn(true);
+		assertTrue(hangman.saveWordScore("apple", 10));
 	}
 
 	@AfterEach

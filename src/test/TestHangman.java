@@ -1,5 +1,6 @@
 package test;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,12 +17,12 @@ import org.junit.jupiter.api.Test;
 import main.Hangman;
 
 class TestHangman {
-	Random random;
-	Hangman hangman;
+	static Random random;
+	static Hangman hangman;
 	int requestedLength;
 
 	@BeforeAll
-	public void setupClass() {
+	public static void setupClass() {
 		random = new Random();
 		hangman = new Hangman();
 		hangman.loadWords();
@@ -30,11 +31,12 @@ class TestHangman {
 	@BeforeEach
 	public void setupTests() {
 		requestedLength = random.nextInt(6) + 5;
+		hangman.score = 0;
 	}
 
 	@Test
 	void test_alphabetCountInAWord() {
-		String word = "Pizza";
+		String word = "pizza";
 		char alphabet = 'a';
 		int count = hangman.countAlphabet(word, alphabet);
 		assertEquals(1, count);
@@ -48,7 +50,7 @@ class TestHangman {
 	}
 
 	@Test
-	void uniquenessofFetchedWord() {
+	void test_uniquenessofFetchedWord() {
 		Set<String> usedWordSet = new HashSet<>();
 		int round = 0;
 		String word = null;
@@ -60,23 +62,67 @@ class TestHangman {
 	}
 
 	@Test
-	void fetchClueBeforeAnyGuess() {
-		String clue = hangman.fetchClue("Pizza");
+	void test_fetchClueBeforeAnyGuess() {
+		String clue = hangman.fetchClue("pizza");
 		assertEquals("-----", clue);
 	}
 
 	@Test
-	void fetchClueAfterACorrectGuess() {
-		String clue = hangman.fetchClue("Pizza");
-		String newclue = hangman.fetchClue("Pizza", clue, 'a');
+	void test_fetchClueAfterACorrectGuess() {
+		String clue = hangman.fetchClue("pizza");
+		String newclue = hangman.fetchClue("pizza", clue, 'a');
 		assertEquals("----a", newclue);
 	}
 
 	@Test
-	void fetchClueAfterAnIncorrectGuess() {
-		String clue = hangman.fetchClue("Pizza");
-		String newclue = hangman.fetchClue("Pizza", clue, 'x');
+	void test_fetchClueAfterAnIncorrectGuess() {
+		String clue = hangman.fetchClue("pizza");
+		String newclue = hangman.fetchClue("pizza", clue, 'x');
 		assertEquals("-----", newclue);
+	}
+
+	@Test
+	void test_whenInvalidGuessThenFetchClueThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> hangman.fetchClue("pizza", "-----", '*'));
+	}
+
+	/* Trails test cases */
+	@Test
+	void test_remainingTrailBeforeAnyGuess() {
+		hangman.fetchWord(requestedLength);
+		assertEquals(Hangman.MAX_TRIALS, hangman.remainingTrails);
+	}
+
+	@Test
+	void test_remainingTrailAfterOneGuess() {
+		hangman.fetchWord(requestedLength);
+		hangman.fetchClue("pizza", "-----", 'x');
+		assertEquals(Hangman.MAX_TRIALS - 1, hangman.remainingTrails);
+	}
+
+	/* scores test cases */
+	@Test
+	void test_scoreBeforeAnyGuess() {
+		hangman.fetchWord(requestedLength);
+		assertEquals(0, hangman.score);
+	}
+
+	@Test
+	void test_scoreAfterACorrectGuess() {
+		String word = "pizza";
+		String clue = "-----";
+		char guess = 'a';
+		hangman.fetchClue(word, clue, guess);
+		assertEquals((double) hangman.MAX_TRIALS / word.length(), hangman.score);
+	}
+
+	@Test
+	void test_scoreAfterAnIncorrectGuess() {
+		String word = "pizza";
+		String clue = "-----";
+		char guess = 'x';
+		hangman.fetchClue(word, clue, guess);
+		assertEquals(0, hangman.score);
 	}
 
 	@AfterEach
@@ -86,7 +132,7 @@ class TestHangman {
 	}
 
 	@AfterAll
-	public void tearDownClass() {
+	public static void tearDownClass() {
 		// to close common functonality if used
 	}
 }
